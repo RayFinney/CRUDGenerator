@@ -1,0 +1,39 @@
+package utility
+
+import (
+	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strings"
+)
+
+var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
+var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
+
+func ToSnakeCase(str string) string {
+	snake := matchFirstCap.ReplaceAllString(str, "${1}_${2}")
+	snake = matchAllCap.ReplaceAllString(snake, "${1}_${2}")
+	return strings.ToLower(snake)
+}
+
+func WriteFile(path string, data []byte) {
+	dirName := filepath.Dir(path)
+	log.Println("make folder path (", path, ") if not existing")
+	err := os.MkdirAll(dirName, os.ModePerm)
+	if err != nil {
+		log.Fatalf("[writeFile] unable to create folder(%s): %v", dirName, err)
+	}
+	log.Println("write file", path)
+	err = ioutil.WriteFile(path, data, os.ModePerm)
+	if err != nil {
+		log.Fatalf("[writeFile] unable to write file(%s): %v", path, err)
+	}
+}
+
+func ReverseTitle(s string) string {
+	firstLetter := strings.ToLower(string(s[0:1]))
+	return fmt.Sprintf("%s%s", firstLetter, string(s[1:]))
+}

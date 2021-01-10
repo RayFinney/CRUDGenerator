@@ -1,0 +1,28 @@
+service: crud-generator
+name: NewsArticle
+delivery: true
+echoVersion: "github.com/labstack/echo/v4"
+template:
+  generateTimestamps: true
+  generateModifyUserReferences: true
+attributes:
+  - name: uuid
+    type: uuid
+    pkey: true
+    required: true
+  - name: title
+    type: string
+    limit: 50
+    required: true
+  - name: article
+    type: string
+    required: true
+  - name: views
+    type: integer
+    required: false
+  - name: rating
+    type: float
+    required: true
+  - name: public
+    type: bool
+    required: true
