@@ -65,7 +65,6 @@ func GenerateService(sourceConfig models.GeneratorSource, wg *sync.WaitGroup) {
 	log.Println("start service generation")
 	var fileContent string
 	lowercaseName := utility.ReverseTitle(sourceConfig.Name)
-	serviceName := fmt.Sprintf("%sService", lowercaseName)
 	repoName := fmt.Sprintf("%sRepo", lowercaseName)
 
 	// HEADER
@@ -97,7 +96,7 @@ func GenerateService(sourceConfig models.GeneratorSource, wg *sync.WaitGroup) {
 	fileContent += fmt.Sprintf(deleteTemplate, repoName, lowercaseName, sourceConfig.Name, "%s", "%v")
 
 	// FACTORY
-	fileContent += fmt.Sprintf(factoryTemplate, serviceName, serviceName, serviceName)
+	fileContent += fmt.Sprintf(factoryTemplate, repoName, repoName, repoName)
 
 	log.Println("service generated!")
 	utility.WriteFile(fmt.Sprintf("%s/%s", utility.ToSnakeCase(sourceConfig.Name), fileName), []byte(fileContent))

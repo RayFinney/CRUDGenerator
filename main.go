@@ -17,13 +17,13 @@ import (
 var wg sync.WaitGroup
 
 func main() {
-	sourceConfigPath := flag.String("domain", "", "Domain name")
+	sourceConfigPath := flag.String("config", "", "path to config yaml")
 	flag.Parse()
 	if *sourceConfigPath == "" {
 		log.Fatal("config path is required")
 	}
 
-	sourceConfig, err := models.LoadSource("generator_sources/news_article.yaml")
+	sourceConfig, err := models.LoadSource(*sourceConfigPath)
 	if err != nil {
 		os.Exit(1)
 	}
