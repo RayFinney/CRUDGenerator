@@ -11,9 +11,15 @@ import (
 
 const fileName string = "repository.go"
 const getTemplate string = `
-func (r *Repository) GetByID(uuid string) (%s models.%s, err error) {
+func (r *Repository) GetByID(uuid string) (models.%s, error) {
 	query := "SELECT %s FROM %s WHERE %s.uuid = $1"
 	return r.getOne(query, uuid)
+}
+`
+const getAllTemplate string = `
+func (r *Repository) GetAll() ([]models.%s, error) {
+	query := "SELECT %s FROM %s"
+	return r.fetch(query)
 }
 `
 const postTemplate string = `
@@ -101,7 +107,10 @@ func GenerateRepository(sourceConfig models.GeneratorSource, wg *sync.WaitGroup)
 	}
 
 	// GET
-	fileContent += fmt.Sprintf(getTemplate, lowercaseName, sourceConfig.Name, selectString, snakeCaseName, snakeCaseName)
+	fileContent += fmt.Sprintf(getTemplate, sourceConfig.Name, selectString, snakeCaseName, snakeCaseName)
+
+	// GET_ALL
+	fileContent += fmt.Sprintf(getAllTemplate, sourceConfig.Name, selectString, snakeCaseName)
 
 	// POST
 	var dbvalues string
@@ -156,8 +165,11 @@ func GenerateRepository(sourceConfig models.GeneratorSource, wg *sync.WaitGroup)
 				setString += ", "
 				uValues += ", "
 			}
+			counter++
 		}
-		counter++
+	}
+	if string(uValues[len(uValues)-2]) == "," {
+		uValues = uValues[0 : len(uValues)-2]
 	}
 
 	fileContent += fmt.Sprintf(putTemplate, lowercaseName, sourceConfig.Name, snakeCaseName, setString, snakeCaseName, counter, uValues)

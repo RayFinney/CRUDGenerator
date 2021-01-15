@@ -22,6 +22,19 @@ func (s *Service) GetByID(ctx context.Context, uuid string) (%s models.%s, err e
 	return %s, nil
 }
 `
+const getAllTemplate string = `
+func (s *Service) GetAll(ctx context.Context) (%ss []models.%s, err error) {
+	%ss, err = s.%s.GetAll()
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return %ss, utility.NOT_FOUND
+		}
+		log.Warningf("[%sService.GetAll()] unable to load %ss: %s", err)
+		return %ss, utility.DATABASE_ERROR
+	}
+	return %ss, nil
+}
+`
 const postTemplate string = `
 func (s *Service) Store(ctx context.Context, %s *models.%s) error {
 	%s
@@ -77,6 +90,9 @@ func GenerateService(sourceConfig models.GeneratorSource, wg *sync.WaitGroup) {
 
 	// GET
 	fileContent += fmt.Sprintf(getTemplate, lowercaseName, sourceConfig.Name, lowercaseName, repoName, lowercaseName, lowercaseName, sourceConfig.Name, "%v", lowercaseName, lowercaseName)
+
+	// GET_ALL
+	fileContent += fmt.Sprintf(getAllTemplate, lowercaseName, sourceConfig.Name, lowercaseName, repoName, lowercaseName, lowercaseName, sourceConfig.Name, "%v", lowercaseName, lowercaseName)
 
 	// POST
 	uuidGenTemp := ""

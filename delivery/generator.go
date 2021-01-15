@@ -26,6 +26,22 @@ func (d *Delivery) GetByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, %s)
 }
 `
+const getAllTemplate string = `
+func (d *Delivery) GetAll(c echo.Context) error {
+	%ss, err := d.%s.GetAll(c.Request().Context())
+	if err != nil {
+		switch err {
+		case utility.FORBIDDEN:
+			return c.NoContent(http.StatusForbidden)
+		case utility.NOT_FOUND:
+			return c.NoContent(http.StatusNotFound)
+		default:
+			return c.String(http.StatusInternalServerError, err.Error())
+		}
+	}
+	return c.JSON(http.StatusOK, %ss)
+}
+`
 const postTemplate string = `
 func (d *Delivery) Store(c echo.Context) error {
 	%s := new(models.%s)
@@ -104,6 +120,9 @@ func GenerateDelivery(sourceConfig models.GeneratorSource, wg *sync.WaitGroup) {
 
 	// GET
 	fileContent += fmt.Sprintf(getTemplate, lowercaseName, serviceName, lowercaseName)
+
+	// GET_ALL
+	fileContent += fmt.Sprintf(getAllTemplate, lowercaseName, serviceName, lowercaseName)
 
 	// POST
 	fileContent += fmt.Sprintf(postTemplate, lowercaseName, sourceConfig.Name, lowercaseName, serviceName, lowercaseName, lowercaseName)
