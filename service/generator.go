@@ -22,6 +22,19 @@ func (s *Service) GetByID(ctx context.Context, uuid string) (%s models.%s, err e
 	return %s, nil
 }
 `
+const getByReferenceTemplate = `
+func (s *Service) GetBy%s(ctx context.Context, uuid string) (%s []models.%s, err error) {
+	%s, err = s.%s.GetBy%s(uuid)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return %s, utility.NOT_FOUND
+		}
+		log.Warningf("[%sService.GetByID()] unable to load %s: %s", err)
+		return %s, utility.DATABASE_ERROR
+	}
+	return %s, nil
+}
+`
 const getAllTemplate string = `
 func (s *Service) GetAll(ctx context.Context) (%ss []models.%s, err error) {
 	%ss, err = s.%s.GetAll()

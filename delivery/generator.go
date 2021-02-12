@@ -5,6 +5,7 @@ import (
 	"crud-generator/utility"
 	"fmt"
 	"log"
+	"strings"
 	"sync"
 )
 
@@ -40,6 +41,23 @@ func (d *Delivery) GetAll(c echo.Context) error {
 		}
 	}
 	return c.JSON(http.StatusOK, %ss)
+}
+`
+const getByReferenceTemplate string = `
+func (d *Delivery) GetBy%s(c echo.Context) error {
+	uuid := c.Param("uuid")
+	result, err := d.%s.GetBy%s(c.Request().Context(), uuid)
+	if err != nil {
+		switch err {
+		case utility.FORBIDDEN:
+			return c.NoContent(http.StatusForbidden)
+		case utility.NOT_FOUND:
+			return c.NoContent(http.StatusNotFound)
+		default:
+			return c.String(http.StatusInternalServerError, err.Error())
+		}
+	}
+	return c.JSON(http.StatusOK, result)
 }
 `
 const postTemplate string = `
@@ -123,6 +141,14 @@ func GenerateDelivery(sourceConfig models.GeneratorSource, wg *sync.WaitGroup) {
 
 	// GET_ALL
 	fileContent += fmt.Sprintf(getAllTemplate, lowercaseName, serviceName, lowercaseName)
+
+	for _, a := range sourceConfig.Attributes {
+		if a.IsReference {
+			name := strings.Title(a.Name)
+			// GET_BY_REFERENCE
+			fileContent += fmt.Sprintf(getByReferenceTemplate, name, serviceName, name)
+		}
+	}
 
 	// POST
 	fileContent += fmt.Sprintf(postTemplate, lowercaseName, sourceConfig.Name, lowercaseName, serviceName, lowercaseName, lowercaseName)

@@ -88,7 +88,7 @@ func GenerateRepository(sourceConfig models.GeneratorSource, wg *sync.WaitGroup)
 	log.Println("start repository generation")
 	var fileContent string
 	lowercaseName := utility.ReverseTitle(sourceConfig.Name)
-	snakeCaseName := fmt.Sprintf("%ss", utility.ToSnakeCase(sourceConfig.Name))
+	snakeCaseName := utility.ToSnakeCase(utility.Pluralize(sourceConfig.Name))
 
 	// HEADER
 	generateDeliveryHeader(&fileContent, sourceConfig)

@@ -92,7 +92,7 @@ func TypeToSqlGet(aType string) string {
 
 func TypeToSqlSet(aType string) string {
 	switch aType {
-	case "string":
+	case "string", "uuid", "timestamp":
 		return "NewNullString"
 	case "integer":
 		return "NewNullInt"
@@ -104,11 +104,12 @@ func TypeToSqlSet(aType string) string {
 }
 
 type GeneratorSourceAttributes struct {
-	Name     string `yaml:"name"`
-	Type     string `yaml:"type"`
-	Limit    int64  `yaml:"limit,omitempty"`
-	Pkey     bool   `yaml:"pkey,omitempty"`
-	Required bool   `yaml:"required"`
+	Name        string `yaml:"name"`
+	Type        string `yaml:"type"`
+	Limit       int64  `yaml:"limit,omitempty"`
+	Pkey        bool   `yaml:"pkey,omitempty"`
+	Required    bool   `yaml:"required"`
+	IsReference bool   `yaml:"isReference"`
 }
 
 func LoadSource(path string) (sourceConfig GeneratorSource, err error) {

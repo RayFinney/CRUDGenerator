@@ -14,7 +14,7 @@ func GenerateMigration(sourceConfig models.GeneratorSource, wg *sync.WaitGroup) 
 	defer wg.Done()
 	log.Println("start migration generation")
 	var fileContent string
-	snakeCaseName := fmt.Sprintf("%ss", utility.ToSnakeCase(sourceConfig.Name))
+	snakeCaseName := utility.ToSnakeCase(utility.Pluralize(sourceConfig.Name))
 
 	fileContent += fmt.Sprintf("CREATE TABLE %s\n", snakeCaseName)
 	fileContent += "(\n"

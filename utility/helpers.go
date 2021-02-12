@@ -19,6 +19,15 @@ func ToSnakeCase(str string) string {
 	return strings.ToLower(snake)
 }
 
+func Pluralize(str string) string {
+	if string(str[len(str)-1]) == "y" {
+		str = fmt.Sprintf("%sies", str[:len(str)-1])
+	} else if string(str[len(str)-1]) != "s" {
+		str = fmt.Sprintf("%ss", str)
+	}
+	return str
+}
+
 func WriteFile(path string, data []byte) {
 	dirName := filepath.Dir(path)
 	log.Println("make folder path (", path, ") if not existing")
