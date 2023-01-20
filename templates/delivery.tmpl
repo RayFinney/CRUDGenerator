@@ -3,7 +3,6 @@ package {{ .Package }}
 import (
 	"{{ .Service }}/models"
 	"{{ .Service }}/utility"
-	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 	"net/http"
@@ -27,7 +26,7 @@ func (d *Delivery) Store{{ .PackageVarTitle }}(c echo.Context) error {
 	if err := c.Bind(&{{ .PackageVarLower }}); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	{{ .PackageVarLower }}, err := d.{{ .PackageVarLower }}Service.Store{{ .PackageVarTitle }}(c.Request().Context(), {{ .PackageVarLower }})
+	err := d.{{ .PackageVarLower }}Service.Store{{ .PackageVarTitle }}(c.Request().Context(), &{{ .PackageVarLower }})
 	if err != nil {
 		return utility.HandleDeliveryErrors(c, err)
 	}
@@ -67,7 +66,7 @@ func (d *Delivery) Get{{ .PackageVarTitle }}List(c echo.Context) error {
 	if err != nil {
 		return utility.HandleDeliveryErrors(c, err)
 	}
-	amount, err := d.{{ .PackageVarLower }}Service.Count{{ .PackageVarTitle }}(c.Request().Context())
+	amount, err := d.{{ .PackageVarLower }}Service.Count{{ .PackageVarTitle }}s(c.Request().Context())
 	if err != nil {
 		return utility.HandleDeliveryErrors(c, err)
 	}

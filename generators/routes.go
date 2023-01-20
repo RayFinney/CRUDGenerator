@@ -5,6 +5,7 @@ import (
 	"crud-generator/utility"
 	"fmt"
 	"log"
+	"path/filepath"
 	"text/template"
 )
 
@@ -12,7 +13,8 @@ func GenerateRoutes(sourceConfig GeneratorSource) {
 	log.Println("start routes generation")
 
 	var fileContent bytes.Buffer
-	tmpl, err := template.New("routes.tmpl").ParseFiles(fmt.Sprintf("%s%s", defaultTemplatePath, "routes.tmpl"))
+	path, _ := filepath.Abs(fmt.Sprintf("%s%s", DefaultTemplatePath, "routes.tmpl"))
+	tmpl, err := template.New("routes.tmpl").ParseFiles(path)
 	if err != nil {
 		log.Println("unable to get routes template:", err.Error())
 	}

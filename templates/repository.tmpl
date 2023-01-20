@@ -22,7 +22,7 @@ func NewRepository(pgx *pgxpool.Pool, logger *zap.Logger) Repository {
 
 func (r *Repository) Store{{ .PackageVarTitle }}(c context.Context, {{ .PackageVarLower }} models.{{ .PackageVarTitle }}) error {
 	var err error
-	query := `INSERT INTO {{ .PackageVarLower }} ({{ .InsertValuesString }}) VALUES ({{ .InsertValuesCounter }})`
+	query := `INSERT INTO {{ .TableName }} ({{ .InsertValuesString }}) VALUES ({{ .InsertValuesCounter }})`
 	_, err = r.pgx.Exec(c, query, {{ .InsertValues }})
 	return err
 }
@@ -37,7 +37,7 @@ func (r *Repository) Store{{ .PackageVarTitle }}Transaction(c context.Context, {
 			return nil, err
 		}
 	}
-	query := `INSERT INTO {{ .PackageVarLower }} ({{ .InsertValuesString }}) VALUES ({{ .InsertValues }})`
+	query := `INSERT INTO {{ .TableName }} ({{ .InsertValuesString }}) VALUES ({{ .InsertValuesCounter }})`
 	_, err = tx.Exec(c, query, {{ .InsertValues }})
 	if err != nil {
 		_ = tx.Rollback(c)
@@ -47,31 +47,31 @@ func (r *Repository) Store{{ .PackageVarTitle }}Transaction(c context.Context, {
 }
 
 func (r *Repository) Update{{ .PackageVarTitle }}(c context.Context, id string, {{ .PackageVarLower }} models.{{ .PackageVarTitle }}) error {
-	query := `UPDATE {{ .PackageVarLower }} SET {{ .UpdateSetString }} WHERE {{ .UpdateWhereString }}`
-	_, err := r.pgx.Exec(c, query, {{ .UpdateValues }})
+	query := `UPDATE {{ .TableName }} SET {{ .UpdateSetString }} WHERE {{ .UpdateWhereString }}`
+	_, err := r.pgx.Exec(c, query, {{ .UpdateValues }}, id)
 	return err
 }
 
 func (r *Repository) Delete{{ .PackageVarTitle }}(c context.Context, id string) error {
-	query := "DELETE FROM {{ .PackageVarLower }} WHERE id = $1"
+	query := "DELETE FROM {{ .TableName }} WHERE id = $1"
 	_, err := r.pgx.Exec(c, query, id)
 	return err
 }
 
 func (r *Repository) Get{{ .PackageVarTitle }}(c context.Context, id string) ({{ .PackageVarLower }} models.{{ .PackageVarTitle }}, err error) {
-	query := `SELECT {{ .SelectString }} FROM {{ .PackageVarLower }} WHERE id = $1`
+	query := `SELECT {{ .SelectString }} FROM {{ .TableName }} WHERE id = $1`
 	err = r.pgx.QueryRow(c, query, id).Scan({{ .SelectScan }})
 	return {{ .PackageVarLower }}, err
 }
 
 func (r *Repository) Count{{ .PackageVarTitle }}s(c context.Context) (amount int64, err error) {
-	err = r.pgx.QueryRow(c, "SELECT COUNT(id) FROM {{ .PackageVarLower }}").
+	err = r.pgx.QueryRow(c, "SELECT COUNT(id) FROM {{ .TableName }}").
 		Scan(&amount)
 	return amount, err
 }
 
 func (r *Repository) Get{{ .PackageVarTitle }}List(c context.Context, limit int64, offset int64) (results []models.{{ .PackageVarTitle }}, err error) {
-	query := `SELECT {{ .SelectString }} FROM {{ .PackageVarLower }} LIMIT $1 OFFSET $2`
+	query := `SELECT {{ .SelectString }} FROM {{ .TableName }} LIMIT $1 OFFSET $2`
 	rows, err := r.pgx.Query(c, query, limit, offset)
 	if err != nil {
 		return nil, err

@@ -5,6 +5,7 @@ import (
 	"crud-generator/utility"
 	"fmt"
 	"log"
+	"path/filepath"
 	"strings"
 	"text/template"
 )
@@ -60,10 +61,10 @@ func GenerateRepository(sourceConfig GeneratorSource) {
 		sourceConfig.UpdateValues = sourceConfig.UpdateValues[0 : len(sourceConfig.UpdateValues)-2]
 	}
 	sourceConfig.UpdateWhereString = fmt.Sprintf("%s = $%d", utility.ToSnakeCase(sourceConfig.GetPKeyName()), counter)
-	sourceConfig.UpdateValues += fmt.Sprintf(", %s.%s", sourceConfig.PackageVarLower, strings.ToUpper(sourceConfig.GetPKeyName()))
 
 	var fileContent bytes.Buffer
-	tmpl, err := template.New("repository.tmpl").ParseFiles(fmt.Sprintf("%s%s", defaultTemplatePath, "repository.tmpl"))
+	path, _ := filepath.Abs(fmt.Sprintf("%s%s", DefaultTemplatePath, "repository.tmpl"))
+	tmpl, err := template.New("repository.tmpl").ParseFiles(path)
 	if err != nil {
 		log.Println("unable to get repository template:", err.Error())
 	}

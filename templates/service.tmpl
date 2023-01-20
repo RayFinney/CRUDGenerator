@@ -2,10 +2,10 @@ package {{ .Package }}
 
 import (
 	"context"
+    uuid "github.com/satori/go.uuid"
+    "go.uber.org/zap"
 	"{{ .Service }}/models"
 	"{{ .Service }}/utility"
-	uuid "github.com/satori/go.uuid"
-	"go.uber.org/zap"
 )
 
 type Service struct {

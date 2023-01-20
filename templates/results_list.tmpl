@@ -1,0 +1,18 @@
+package models
+
+type ResultList struct {
+	Items          []interface{} `json:"items"`
+	HasMore        bool          `json:"has_more"`
+	QuotaMax       int64         `json:"quota_max"`
+	QuotaRemaining int64         `json:"quota_remaining"`
+}
+
+func (l *ResultList) CalcQuota(amount int64, start int64, limit int64) {
+	remaining := amount - (start + limit)
+	if remaining < 0 {
+		remaining = 0
+	}
+	l.HasMore = remaining > 0
+	l.QuotaMax = amount
+	l.QuotaRemaining = remaining
+}

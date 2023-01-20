@@ -9,7 +9,8 @@ import (
 	"strings"
 )
 
-const defaultTemplatePath = "templates/"
+var DefaultTemplatePath = "/templates/"
+
 const deliveryFileName string = "delivery.go"
 const repositoryFileName string = "repository.go"
 const serviceFileName string = "service.go"
@@ -36,6 +37,7 @@ type GeneratorSource struct {
 	SelectString        string
 	SelectScan          string
 	PrimaryKey          string
+	TableName           string
 }
 
 func (gs *GeneratorSource) PrepareForTemplate() {
@@ -44,6 +46,7 @@ func (gs *GeneratorSource) PrepareForTemplate() {
 	gs.PackageVarTitle = gs.Name
 	gs.PackageVarLower = utility.ReverseTitle(gs.Name)
 	gs.PrimaryKey = strings.ToUpper(gs.GetPKeyName())
+	gs.TableName = utility.ToSnakeCase(utility.Pluralize(gs.Name))
 }
 
 func (gs *GeneratorSource) HasUUIDAsPKey() bool {

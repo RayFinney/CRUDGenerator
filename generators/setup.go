@@ -5,6 +5,7 @@ import (
 	"crud-generator/utility"
 	"fmt"
 	"log"
+	"path/filepath"
 	"text/template"
 )
 
@@ -12,7 +13,8 @@ func GenerateSetup(sourceConfig GeneratorSource) {
 	log.Println("start setup generation")
 
 	var fileContent bytes.Buffer
-	tmpl, err := template.New("setup.tmpl").ParseFiles(fmt.Sprintf("%s%s", defaultTemplatePath, "setup.tmpl"))
+	path, _ := filepath.Abs(fmt.Sprintf("%s%s", DefaultTemplatePath, "setup.tmpl"))
+	tmpl, err := template.New("setup.tmpl").ParseFiles(path)
 	if err != nil {
 		log.Println("unable to get setup template:", err.Error())
 	}

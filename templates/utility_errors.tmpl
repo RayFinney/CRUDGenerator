@@ -11,9 +11,23 @@ import (
 
 var (
 	INVALID_LOGIN = errors.New("INVALID_LOGIN")
-	NOT_FOUND     = errors.New("NOT_FOUND")
-	UNAUTHORIZED  = errors.New("UNAUTHORIZED")
-	FORBIDDEN     = errors.New("FORBIDDEN")
+    NOT_FOUND     = errors.New("NOT_FOUND")
+    UNAUTHORIZED  = errors.New("UNAUTHORIZED")
+    FORBIDDEN     = errors.New("FORBIDDEN")
+    USER_NOT_FOUND            = errors.New("USER_NOT_FOUND")
+    SYSTEM_ERROR              = errors.New("SYSTEM_ERROR")
+    SYSTEM_TEMP_ERROR         = errors.New("SYSTEM_TEMP_ERROR")
+    SSO_ERROR                 = errors.New("SSO_ERROR")
+    SSO_TEMP_ERROR            = errors.New("SSO_TEMP_ERROR")
+    DATABASE_ERROR            = errors.New("DATABASE_ERROR")
+    INVALID_INPUT             = errors.New("INVALID_INPUT")
+    CONFLICT                  = errors.New("CONFLICT")
+    INVALID_FILE_EXTENSION    = errors.New("INVALID_FILE_EXTENSION")
+    FILE_ERROR                = errors.New("FILE_ERROR")
+    INVALID_PASSWORD          = errors.New("INVALID_PASSWORD")
+    INVALID_EMAIL             = errors.New("INVALID_EMAIL")
+    CONFIRM_PASSWORD_REQUIRED = errors.New("CONFIRM_PASSWORD_REQUIRED")
+    INVALID_CONFIRM_PASSWORD  = errors.New("INVALID_CONFIRM_PASSWORD")
 )
 
 func HandleDeliveryErrors(ctx echo.Context, err error) error {

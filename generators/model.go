@@ -13,7 +13,7 @@ func GenerateModel(sourceConfig GeneratorSource) {
 
 	// HEADER
 	fileContent += utility.GeneratePackage("models")
-	fileContent += utility.GenerateImports([]string{fmt.Sprintf("%s/utility", sourceConfig.Service)}, []string{"database/sql"}, []string{"errors"})
+	fileContent += utility.GenerateImports([]string{"errors"})
 
 	// STRUCT
 	fileContent += fmt.Sprintf("type %s struct {\n", sourceConfig.Name)

@@ -5,6 +5,7 @@ import (
 	"crud-generator/utility"
 	"fmt"
 	"log"
+	"path/filepath"
 	"text/template"
 )
 
@@ -12,7 +13,8 @@ func GenerateDelivery(sourceConfig GeneratorSource) {
 	log.Println("start delivery generation")
 
 	var fileContent bytes.Buffer
-	tmpl, err := template.New("delivery.tmpl").ParseFiles(fmt.Sprintf("%s%s", defaultTemplatePath, "delivery.tmpl"))
+	path, _ := filepath.Abs(fmt.Sprintf("%s%s", DefaultTemplatePath, "delivery.tmpl"))
+	tmpl, err := template.New("delivery.tmpl").ParseFiles(path)
 	if err != nil {
 		log.Println("unable to get delivery template:", err.Error())
 	}

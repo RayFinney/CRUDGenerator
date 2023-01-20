@@ -6,6 +6,7 @@ import (
 	"flag"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 func main() {
@@ -14,6 +15,13 @@ func main() {
 	if *sourceConfigPath == "" {
 		log.Fatal("config path is required")
 	}
+
+	ex, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	exPath := filepath.Dir(ex)
+	generators.DefaultTemplatePath = exPath + generators.DefaultTemplatePath
 
 	sourceConfig, err := generators.LoadSource(*sourceConfigPath)
 	if err != nil {

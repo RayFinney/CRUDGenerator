@@ -5,6 +5,7 @@ import (
 	"crud-generator/utility"
 	"fmt"
 	"log"
+	"path/filepath"
 	"text/template"
 )
 
@@ -12,7 +13,8 @@ func GenerateService(sourceConfig GeneratorSource) {
 	log.Println("start service generation")
 
 	var fileContent bytes.Buffer
-	tmpl, err := template.New("service.tmpl").ParseFiles(fmt.Sprintf("%s%s", defaultTemplatePath, "service.tmpl"))
+	path, _ := filepath.Abs(fmt.Sprintf("%s%s", DefaultTemplatePath, "service.tmpl"))
+	tmpl, err := template.New("service.tmpl").ParseFiles(path)
 	if err != nil {
 		log.Println("unable to get service template:", err.Error())
 	}
