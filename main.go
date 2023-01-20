@@ -1,20 +1,12 @@
 package main
 
 import (
-	"crud-generator/delivery"
-	"crud-generator/migrate"
-	"crud-generator/model"
-	"crud-generator/models"
-	"crud-generator/repository"
-	"crud-generator/service"
+	"crud-generator/generators"
 	"crud-generator/utility"
 	"flag"
 	"log"
 	"os"
-	"sync"
 )
-
-var wg sync.WaitGroup
 
 func main() {
 	sourceConfigPath := flag.String("config", "", "path to config yaml")
@@ -23,36 +15,29 @@ func main() {
 		log.Fatal("config path is required")
 	}
 
-	sourceConfig, err := models.LoadSource(*sourceConfigPath)
+	sourceConfig, err := generators.LoadSource(*sourceConfigPath)
 	if err != nil {
 		os.Exit(1)
 	}
+	sourceConfig.PrepareForTemplate()
 	generateStructure(sourceConfig)
 }
 
-func generateStructure(sourceConfig models.GeneratorSource) {
+func generateStructure(sourceConfig generators.GeneratorSource) {
 	err := os.Mkdir(utility.ToSnakeCase(sourceConfig.Name), os.ModePerm)
 	if err != nil {
 		log.Fatalf("[generateStructure] unable to create folder(%s): %v", sourceConfig.Name, err)
 	}
-	wg = sync.WaitGroup{}
 
-	wg.Add(1)
-	go model.GenerateModel(sourceConfig, &wg)
-
+	generators.GenerateModel(sourceConfig)
 	if sourceConfig.Delivery {
-		wg.Add(1)
-		go delivery.GenerateDelivery(sourceConfig, &wg)
+		generators.GenerateDelivery(sourceConfig)
 	}
 
-	wg.Add(1)
-	go service.GenerateService(sourceConfig, &wg)
-
-	wg.Add(1)
-	go repository.GenerateRepository(sourceConfig, &wg)
-
-	wg.Add(1)
-	go migrate.GenerateMigration(sourceConfig, &wg)
-
-	wg.Wait()
+	generators.GenerateService(sourceConfig)
+	generators.GenerateRepository(sourceConfig)
+	generators.GenerateMigration(sourceConfig)
+	generators.GenerateRoutes(sourceConfig)
+	generators.GenerateSetup(sourceConfig)
+	generators.GenerateUtilities(sourceConfig)
 }

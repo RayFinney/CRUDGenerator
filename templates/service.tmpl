@@ -1,0 +1,77 @@
+package {{ .Package }}
+
+import (
+	"context"
+	"{{ .Service }}/models"
+	"{{ .Service }}/utility"
+	uuid "github.com/satori/go.uuid"
+	"go.uber.org/zap"
+)
+
+type Service struct {
+	{{ .PackageVarLower }}Repository Repository
+	logger              *zap.Logger
+}
+
+func NewService({{ .PackageVarLower }}Repository Repository, logger *zap.Logger) Service {
+	return Service{
+		{{ .PackageVarLower }}Repository: {{ .PackageVarLower }}Repository,
+		logger:              logger,
+	}
+}
+
+func (s *Service) Store{{ .PackageVarTitle }}(c context.Context, {{ .PackageVarLower }} *models.{{ .PackageVarTitle }}) error {
+	{{ .PackageVarLower }}.{{ .PrimaryKey }} = uuid.NewV4().String()
+	tx, err := s.{{ .PackageVarLower }}Repository.Store{{ .PackageVarTitle }}Transaction(c, *{{ .PackageVarLower }}, nil)
+	err = tx.Commit(c)
+	if err != nil {
+		s.logger.Warn("pgx commit failed", zap.Error(err))
+		return utility.DATABASE_ERROR
+	}
+	return nil
+}
+
+func (s *Service) Update{{ .PackageVarTitle }}(c context.Context, id string, {{ .PackageVarLower }} *models.{{ .PackageVarTitle }}) error {
+	err := s.{{ .PackageVarLower }}Repository.Update{{ .PackageVarTitle }}(c, id, *{{ .PackageVarLower }})
+	if err != nil {
+		s.logger.Warn("unable to update {{ .PackageVarLower }}", zap.Error(err))
+		return utility.DATABASE_ERROR
+	}
+	return nil
+}
+
+func (s *Service) Get{{ .PackageVarTitle }}(c context.Context, id string) (models.{{ .PackageVarTitle }}, error) {
+	{{ .PackageVarLower }}, err := s.{{ .PackageVarLower }}Repository.Get{{ .PackageVarTitle }}(c, id)
+	if err != nil {
+		s.logger.Warn("unable to get {{ .PackageVarLower }}", zap.Error(err))
+		return {{ .PackageVarLower }}, utility.DATABASE_ERROR
+	}
+	return {{ .PackageVarLower }}, nil
+}
+
+func (s *Service) Delete{{ .PackageVarTitle }}(c context.Context, id string) error {
+	err := s.{{ .PackageVarLower }}Repository.Delete{{ .PackageVarTitle }}(c, id)
+	if err != nil {
+		s.logger.Warn("unable to delete {{ .PackageVarLower }}", zap.Error(err))
+		return utility.DATABASE_ERROR
+	}
+	return nil
+}
+
+func (s *Service) Get{{ .PackageVarTitle }}List(c context.Context, limit int64, offset int64) ([]models.{{ .PackageVarTitle }}, error) {
+	{{ .PackageVarLower }}s, err := s.{{ .PackageVarLower }}Repository.Get{{ .PackageVarTitle }}List(c, limit, offset)
+	if err != nil {
+		s.logger.Warn("unable to fetch {{ .PackageVarLower }}s", zap.Error(err))
+		return {{ .PackageVarLower }}s, utility.DATABASE_ERROR
+	}
+	return {{ .PackageVarLower }}s, nil
+}
+
+func (s *Service) Count{{ .PackageVarTitle }}s(c context.Context) (int64, error) {
+	amount, err := s.{{ .PackageVarLower }}Repository.Count{{ .PackageVarTitle }}s(c)
+	if err != nil {
+		s.logger.Warn("unable to count {{ .PackageVarLower }}s", zap.Error(err))
+		return amount, utility.DATABASE_ERROR
+	}
+	return amount, nil
+}

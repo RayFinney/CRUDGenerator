@@ -1,0 +1,19 @@
+package {{ .Package }}
+
+import (
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
+)
+
+func Setup(pgx *pgxpool.Pool, logger *zap.Logger) (Delivery, Service, Repository) {
+	repo := NewRepository(pgx, logger)
+	service := NewService(repo, logger)
+	delivery := NewDelivery(service, logger)
+	return delivery, service, repo
+}
+
+func SetupFull(g *echo.Group, pgx *pgxpool.Pool, logger *zap.Logger) {
+	delivery, _, _ := Setup(pgx, logger)
+	Register(g, delivery)
+}

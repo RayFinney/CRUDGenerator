@@ -1,6 +1,7 @@
-package models
+package generators
 
 import (
+	"crud-generator/utility"
 	"fmt"
 	"github.com/go-yaml/yaml"
 	"io/ioutil"
@@ -8,22 +9,59 @@ import (
 	"strings"
 )
 
+const defaultTemplatePath = "templates/"
+const deliveryFileName string = "delivery.go"
+const repositoryFileName string = "repository.go"
+const serviceFileName string = "service.go"
+const routesFileName string = "routes.go"
+const setupFileName string = "setup.go"
+
 type GeneratorSource struct {
-	Service     string                      `yaml:"service"`
-	Name        string                      `yaml:"name"`
-	Delivery    bool                        `yaml:"delivery"`
-	EchoVersion string                      `yaml:"echoVersion"`
-	Template    map[string]bool             `yaml:"template"`
-	Attributes  []GeneratorSourceAttributes `yaml:"attributes"`
+	Service             string                      `yaml:"service"`
+	Name                string                      `yaml:"name"`
+	Delivery            bool                        `yaml:"delivery"`
+	EchoVersion         string                      `yaml:"echoVersion"`
+	Template            map[string]bool             `yaml:"template"`
+	Attributes          []GeneratorSourceAttributes `yaml:"attributes"`
+	Package             string
+	PackageSlug         string
+	PackageVarTitle     string
+	PackageVarLower     string
+	InsertValuesString  string
+	InsertValuesCounter string
+	InsertValues        string
+	UpdateSetString     string
+	UpdateWhereString   string
+	UpdateValues        string
+	SelectString        string
+	SelectScan          string
+	PrimaryKey          string
 }
 
-func (s *GeneratorSource) HasUUIDAsPKey() bool {
-	for _, a := range s.Attributes {
+func (gs *GeneratorSource) PrepareForTemplate() {
+	gs.Package = utility.ToSnakeCase(gs.Name)
+	gs.PackageSlug = utility.ToSlug(gs.Name)
+	gs.PackageVarTitle = gs.Name
+	gs.PackageVarLower = utility.ReverseTitle(gs.Name)
+	gs.PrimaryKey = strings.ToUpper(gs.GetPKeyName())
+}
+
+func (gs *GeneratorSource) HasUUIDAsPKey() bool {
+	for _, a := range gs.Attributes {
 		if strings.ToLower(a.Name) == "uuid" && a.Pkey == true {
 			return true
 		}
 	}
 	return false
+}
+
+func (gs *GeneratorSource) GetPKeyName() string {
+	for _, a := range gs.Attributes {
+		if a.Pkey == true {
+			return a.Name
+		}
+	}
+	return ""
 }
 
 func AttributeToType(aType string) string {

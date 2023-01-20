@@ -1,0 +1,30 @@
+package utility
+
+// THIS FILE IS AUTO GENERATED DO NOT CHANGE!
+
+import (
+	"errors"
+	"github.com/jackc/pgx/v5"
+	"github.com/labstack/echo/v4"
+	"net/http"
+)
+
+var (
+	INVALID_LOGIN = errors.New("INVALID_LOGIN")
+	NOT_FOUND     = errors.New("NOT_FOUND")
+	UNAUTHORIZED  = errors.New("UNAUTHORIZED")
+	FORBIDDEN     = errors.New("FORBIDDEN")
+)
+
+func HandleDeliveryErrors(ctx echo.Context, err error) error {
+	switch err {
+	case NOT_FOUND, pgx.ErrNoRows:
+		return ctx.NoContent(http.StatusNotFound)
+	case UNAUTHORIZED:
+		return ctx.NoContent(http.StatusUnauthorized)
+	case FORBIDDEN:
+		return ctx.NoContent(http.StatusForbidden)
+	default:
+		return ctx.String(http.StatusInternalServerError, err.Error())
+	}
+}

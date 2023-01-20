@@ -1,0 +1,17 @@
+package {{ .Package }}
+
+import (
+	"github.com/labstack/echo/v4"
+)
+
+const UrlPrefix = "/{{ .PackageSlug }}"
+
+func Register(g *echo.Group, d Delivery) {
+	{{ .Package }}Group := g.Group(UrlPrefix)
+
+	{{ .Package }}Group.POST("", d.Store{{ .PackageVarTitle }})
+	{{ .Package }}Group.GET("", d.Get{{ .PackageVarTitle }}List)
+	{{ .Package }}Group.GET("/:id", d.Get{{ .PackageVarTitle }})
+	{{ .Package }}Group.PUT("/:id", d.Update{{ .PackageVarTitle }})
+	{{ .Package }}Group.DELETE("/:id", d.Delete{{ .PackageVarTitle }})
+}

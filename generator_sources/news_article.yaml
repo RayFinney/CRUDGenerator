@@ -1,7 +1,6 @@
 service: crud-generator
 name: NewsArticle
 delivery: true
-echoVersion: "github.com/labstack/echo/v4"
 template:
   generateTimestamps: true
   generateModifyUserReferences: true

@@ -1,17 +1,14 @@
-package migrate
+package generators
 
 import (
-	"crud-generator/models"
 	"crud-generator/utility"
 	"fmt"
 	"log"
 	"strings"
-	"sync"
 	"time"
 )
 
-func GenerateMigration(sourceConfig models.GeneratorSource, wg *sync.WaitGroup) {
-	defer wg.Done()
+func GenerateMigration(sourceConfig GeneratorSource) {
 	log.Println("start migration generation")
 	var fileContent string
 	snakeCaseName := utility.ToSnakeCase(utility.Pluralize(sourceConfig.Name))
@@ -24,7 +21,7 @@ func GenerateMigration(sourceConfig models.GeneratorSource, wg *sync.WaitGroup) 
 		if a.Required {
 			null = "NOT NULL"
 		}
-		fileContent += fmt.Sprintf("\t%s %s %s,\n", utility.ToSnakeCase(a.Name), strings.ToUpper(models.AttributeToPostgresType(a.Type, a.Limit)), null)
+		fileContent += fmt.Sprintf("\t%s %s %s,\n", utility.ToSnakeCase(a.Name), strings.ToUpper(AttributeToPostgresType(a.Type, a.Limit)), null)
 		if a.Pkey {
 			primaryKey = fmt.Sprintf("\tPRIMARY KEY (%s)\n", strings.ToLower(a.Name))
 		}

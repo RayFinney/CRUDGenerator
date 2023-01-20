@@ -1,0 +1,83 @@
+package {{ .Package }}
+
+import (
+	"{{ .Service }}/models"
+	"{{ .Service }}/utility"
+	"github.com/golang-jwt/jwt"
+	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
+	"net/http"
+	"strconv"
+)
+
+type Delivery struct {
+	{{ .PackageVarLower }}Service Service
+	logger         *zap.Logger
+}
+
+func NewDelivery({{ .PackageVarLower }}Service Service, logger *zap.Logger) Delivery {
+	return Delivery{
+		{{ .PackageVarLower }}Service: {{ .PackageVarLower }}Service,
+		logger:         logger,
+	}
+}
+
+func (d *Delivery) Store{{ .PackageVarTitle }}(c echo.Context) error {
+	var {{ .PackageVarLower }} models.{{ .PackageVarTitle }}
+	if err := c.Bind(&{{ .PackageVarLower }}); err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	{{ .PackageVarLower }}, err := d.{{ .PackageVarLower }}Service.Store{{ .PackageVarTitle }}(c.Request().Context(), {{ .PackageVarLower }})
+	if err != nil {
+		return utility.HandleDeliveryErrors(c, err)
+	}
+	return c.JSON(http.StatusOK, {{ .PackageVarLower }})
+}
+
+func (d *Delivery) Get{{ .PackageVarTitle }}List(c echo.Context) error {
+	var (
+		start int64
+		limit int64
+		err   error
+		//filter   string
+		//fulltext string
+	)
+
+	startString := c.QueryParam("start")
+	if startString == "" {
+		start = 0
+	} else {
+		start, err = strconv.ParseInt(startString, 10, 64)
+		if err != nil {
+			return c.String(http.StatusBadRequest, "start must be number")
+		}
+	}
+	limitString := c.QueryParam("limit")
+	if limitString == "" {
+		limit = 10
+	} else {
+		limit, err = strconv.ParseInt(limitString, 10, 64)
+		if err != nil {
+			return c.String(http.StatusBadRequest, "limit must be number")
+		}
+	}
+	//filter = c.QueryParam("filter")
+	//fulltext = c.QueryParam("fulltext")
+	{{ .PackageVarLower }}s, err := d.{{ .PackageVarLower }}Service.Get{{ .PackageVarTitle }}List(c.Request().Context(), limit, start)
+	if err != nil {
+		return utility.HandleDeliveryErrors(c, err)
+	}
+	amount, err := d.{{ .PackageVarLower }}Service.Count{{ .PackageVarTitle }}(c.Request().Context())
+	if err != nil {
+		return utility.HandleDeliveryErrors(c, err)
+	}
+
+	var list models.ResultList
+	list.CalcQuota(amount, start, limit)
+	fetchAmount := len({{ .PackageVarLower }}s)
+	list.Items = make([]interface{}, fetchAmount)
+	for index := 0; index < fetchAmount; index++ {
+		list.Items[index] = {{ .PackageVarLower }}s[index]
+	}
+	return c.JSON(http.StatusOK, list)
+}

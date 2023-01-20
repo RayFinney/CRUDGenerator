@@ -1,0 +1,93 @@
+package {{ .Package }}
+
+import (
+	"context"
+	"{{ .Service }}/models"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"go.uber.org/zap"
+)
+
+type Repository struct {
+	pgx    *pgxpool.Pool
+	logger *zap.Logger
+}
+
+func NewRepository(pgx *pgxpool.Pool, logger *zap.Logger) Repository {
+	return Repository{
+		pgx:    pgx,
+		logger: logger,
+	}
+}
+
+func (r *Repository) Store{{ .PackageVarTitle }}(c context.Context, {{ .PackageVarLower }} models.{{ .PackageVarTitle }}) error {
+	var err error
+	query := `INSERT INTO {{ .PackageVarLower }} ({{ .InsertValuesString }}) VALUES ({{ .InsertValuesCounter }})`
+	_, err = r.pgx.Exec(c, query, {{ .InsertValues }})
+	return err
+}
+
+func (r *Repository) Store{{ .PackageVarTitle }}Transaction(c context.Context, {{ .PackageVarLower }} models.{{ .PackageVarTitle }}, tx pgx.Tx) (pgx.Tx, error) {
+	var err error
+	if tx == nil {
+		tx, err = r.pgx.BeginTx(c, pgx.TxOptions{
+			DeferrableMode: pgx.Deferrable,
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+	query := `INSERT INTO {{ .PackageVarLower }} ({{ .InsertValuesString }}) VALUES ({{ .InsertValues }})`
+	_, err = tx.Exec(c, query, {{ .InsertValues }})
+	if err != nil {
+		_ = tx.Rollback(c)
+		return nil, err
+	}
+	return tx, err
+}
+
+func (r *Repository) Update{{ .PackageVarTitle }}(c context.Context, id string, {{ .PackageVarLower }} models.{{ .PackageVarTitle }}) error {
+	query := `UPDATE {{ .PackageVarLower }} SET {{ .UpdateSetString }} WHERE {{ .UpdateWhereString }}`
+	_, err := r.pgx.Exec(c, query, {{ .UpdateValues }})
+	return err
+}
+
+func (r *Repository) Delete{{ .PackageVarTitle }}(c context.Context, id string) error {
+	query := "DELETE FROM {{ .PackageVarLower }} WHERE id = $1"
+	_, err := r.pgx.Exec(c, query, id)
+	return err
+}
+
+func (r *Repository) Get{{ .PackageVarTitle }}(c context.Context, id string) ({{ .PackageVarLower }} models.{{ .PackageVarTitle }}, err error) {
+	query := `SELECT {{ .SelectString }} FROM {{ .PackageVarLower }} WHERE id = $1`
+	err = r.pgx.QueryRow(c, query, id).Scan({{ .SelectScan }})
+	return {{ .PackageVarLower }}, err
+}
+
+func (r *Repository) Count{{ .PackageVarTitle }}s(c context.Context) (amount int64, err error) {
+	err = r.pgx.QueryRow(c, "SELECT COUNT(id) FROM {{ .PackageVarLower }}").
+		Scan(&amount)
+	return amount, err
+}
+
+func (r *Repository) Get{{ .PackageVarTitle }}List(c context.Context, limit int64, offset int64) (results []models.{{ .PackageVarTitle }}, err error) {
+	query := `SELECT {{ .SelectString }} FROM {{ .PackageVarLower }} LIMIT $1 OFFSET $2`
+	rows, err := r.pgx.Query(c, query, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	results = make([]models.{{ .PackageVarTitle }}, limit)
+	i := 0
+	for rows.Next() {
+		var {{ .PackageVarLower }} models.{{ .PackageVarTitle }}
+		err = rows.Scan({{ .SelectScan }})
+		if err != nil {
+			r.logger.Warn("unable to scan {{ .PackageVarLower }}", zap.Error(err))
+			continue
+		}
+		results[i] = {{ .PackageVarLower }}
+		i++
+	}
+	return results, err
+}

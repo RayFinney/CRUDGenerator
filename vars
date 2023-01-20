@@ -1,0 +1,14 @@
+{{ .Service }}
+{{ .Package }}
+{{ .PackageSlug }}
+{{ .PackageVarTitle }}
+{{ .PackageVarLower }}
+
+{{ .InsertValuesString }} // INSERT INTO (STRING)
+{{ .InsertValuesCounter }} // VALUES (COUNTER)
+{{ .InsertValues }} // r.pgx.Exec(c, query, {{insertValuesString}})
+{{ .UpdateSetString }}
+{{ .UpdateWhereString }}
+{{ .UpdateValues }}
+{{ .SelectString }}
+{{ .SelectScan }}
