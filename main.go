@@ -48,4 +48,5 @@ func generateStructure(sourceConfig generators.GeneratorSource) {
 	generators.GenerateRoutes(sourceConfig)
 	generators.GenerateSetup(sourceConfig)
 	generators.GenerateUtilities(sourceConfig)
+	generators.GeneratePinia(sourceConfig)
 }
