@@ -40,13 +40,13 @@ func generateStructure(sourceConfig generators.GeneratorSource) {
 	generators.GenerateModel(sourceConfig)
 	if sourceConfig.Delivery {
 		generators.GenerateDelivery(sourceConfig)
+		generators.GenerateRoutes(sourceConfig)
+		generators.GeneratePinia(sourceConfig)
 	}
 
 	generators.GenerateService(sourceConfig)
 	generators.GenerateRepository(sourceConfig)
 	generators.GenerateMigration(sourceConfig)
-	generators.GenerateRoutes(sourceConfig)
 	generators.GenerateSetup(sourceConfig)
 	generators.GenerateUtilities(sourceConfig)
-	generators.GeneratePinia(sourceConfig)
 }
