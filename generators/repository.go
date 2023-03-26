@@ -26,7 +26,7 @@ func GenerateRepository(sourceConfig GeneratorSource) {
 		if name == "Uuid" {
 			name = "UUID"
 		}
-		sourceConfig.SelectScan += fmt.Sprintf("%s.%s", sourceConfig.PackageVarLower, name)
+		sourceConfig.SelectScan += fmt.Sprintf("&%s.%s", sourceConfig.PackageVarLower, name)
 
 		// INSERT
 		sourceConfig.InsertValuesString += utility.ToSnakeCase(a.Name)
