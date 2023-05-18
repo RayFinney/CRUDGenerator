@@ -26,7 +26,7 @@ func (s *Service) Store{{ .PackageVarTitle }}(c context.Context, {{ .PackageVarL
 	err = tx.Commit(c)
 	if err != nil {
 		s.logger.Warn("pgx commit failed", zap.Error(err))
-		return utility.DATABASE_ERROR
+		return utility.ErrDatabaseError
 	}
 	return nil
 }
@@ -35,7 +35,7 @@ func (s *Service) Update{{ .PackageVarTitle }}(c context.Context, id string, {{ 
 	err := s.{{ .PackageVarLower }}Repository.Update{{ .PackageVarTitle }}(c, id, *{{ .PackageVarLower }})
 	if err != nil {
 		s.logger.Warn("unable to update {{ .PackageVarLower }}", zap.Error(err))
-		return utility.DATABASE_ERROR
+		return utility.ErrDatabaseError
 	}
 	return nil
 }
@@ -44,7 +44,7 @@ func (s *Service) Get{{ .PackageVarTitle }}(c context.Context, id string) (model
 	{{ .PackageVarLower }}, err := s.{{ .PackageVarLower }}Repository.Get{{ .PackageVarTitle }}(c, id)
 	if err != nil {
 		s.logger.Warn("unable to get {{ .PackageVarLower }}", zap.Error(err))
-		return {{ .PackageVarLower }}, utility.DATABASE_ERROR
+		return {{ .PackageVarLower }}, utility.ErrDatabaseError
 	}
 	return {{ .PackageVarLower }}, nil
 }
@@ -53,7 +53,7 @@ func (s *Service) Delete{{ .PackageVarTitle }}(c context.Context, id string) err
 	err := s.{{ .PackageVarLower }}Repository.Delete{{ .PackageVarTitle }}(c, id)
 	if err != nil {
 		s.logger.Warn("unable to delete {{ .PackageVarLower }}", zap.Error(err))
-		return utility.DATABASE_ERROR
+		return utility.ErrDatabaseError
 	}
 	return nil
 }
@@ -62,7 +62,7 @@ func (s *Service) Get{{ .PackageVarTitle }}List(c context.Context, limit int64, 
 	{{ .PackageVarLower }}s, err := s.{{ .PackageVarLower }}Repository.Get{{ .PackageVarTitle }}List(c, limit, offset)
 	if err != nil {
 		s.logger.Warn("unable to fetch {{ .PackageVarLower }}s", zap.Error(err))
-		return {{ .PackageVarLower }}s, utility.DATABASE_ERROR
+		return {{ .PackageVarLower }}s, utility.ErrDatabaseError
 	}
 	return {{ .PackageVarLower }}s, nil
 }
@@ -71,7 +71,7 @@ func (s *Service) Count{{ .PackageVarTitle }}s(c context.Context) (int64, error)
 	amount, err := s.{{ .PackageVarLower }}Repository.Count{{ .PackageVarTitle }}s(c)
 	if err != nil {
 		s.logger.Warn("unable to count {{ .PackageVarLower }}s", zap.Error(err))
-		return amount, utility.DATABASE_ERROR
+		return amount, utility.ErrDatabaseError
 	}
 	return amount, nil
 }

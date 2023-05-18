@@ -10,33 +10,33 @@ import (
 )
 
 var (
-	INVALID_LOGIN = errors.New("INVALID_LOGIN")
-    NOT_FOUND     = errors.New("NOT_FOUND")
-    UNAUTHORIZED  = errors.New("UNAUTHORIZED")
-    FORBIDDEN     = errors.New("FORBIDDEN")
-    USER_NOT_FOUND            = errors.New("USER_NOT_FOUND")
-    SYSTEM_ERROR              = errors.New("SYSTEM_ERROR")
-    SYSTEM_TEMP_ERROR         = errors.New("SYSTEM_TEMP_ERROR")
-    SSO_ERROR                 = errors.New("SSO_ERROR")
-    SSO_TEMP_ERROR            = errors.New("SSO_TEMP_ERROR")
-    DATABASE_ERROR            = errors.New("DATABASE_ERROR")
-    INVALID_INPUT             = errors.New("INVALID_INPUT")
-    CONFLICT                  = errors.New("CONFLICT")
-    INVALID_FILE_EXTENSION    = errors.New("INVALID_FILE_EXTENSION")
-    FILE_ERROR                = errors.New("FILE_ERROR")
-    INVALID_PASSWORD          = errors.New("INVALID_PASSWORD")
-    INVALID_EMAIL             = errors.New("INVALID_EMAIL")
-    CONFIRM_PASSWORD_REQUIRED = errors.New("CONFIRM_PASSWORD_REQUIRED")
-    INVALID_CONFIRM_PASSWORD  = errors.New("INVALID_CONFIRM_PASSWORD")
+	ErrInvalidLogin            = errors.New("ErrInvalidLogin")
+	ErrNotFound                = errors.New("NOT_FOUND")
+	ErrUnauthorized            = errors.New("ErrUnauthorized")
+	ErrForbidden               = errors.New("ErrForbidden")
+	ErrUserNotFound            = errors.New("USER_NOT_FOUND")
+	ErrSystemError             = errors.New("SYSTEM_ERROR")
+	ErrSystemTempError         = errors.New("SYSTEM_TEMP_ERROR")
+	ErrSSOError                = errors.New("SSO_ERROR")
+	ErrSSOTempError            = errors.New("SSO_TEMP_ERROR")
+	ErrDatabaseError           = errors.New("DATABASE_ERROR")
+	ErrInvalidInput            = errors.New("INVALID_INPUT")
+	ErrConflict                = errors.New("ErrConflict")
+	ErrInvalidFileExtension    = errors.New("INVALID_FILE_EXTENSION")
+	ErrFileError               = errors.New("FILE_ERROR")
+	ErrInvalidPassword         = errors.New("INVALID_PASSWORD")
+	ErrInvalidEmail            = errors.New("INVALID_EMAIL")
+	ErrConfirmPasswordRequired = errors.New("CONFIRM_PASSWORD_REQUIRED")
+	ErrInvalidConfirmPassword  = errors.New("INVALID_CONFIRM_PASSWORD")
 )
 
 func HandleDeliveryErrors(ctx echo.Context, err error) error {
 	switch err {
-	case NOT_FOUND, pgx.ErrNoRows:
+	case ErrNotFound, pgx.ErrNoRows:
 		return ctx.NoContent(http.StatusNotFound)
-	case UNAUTHORIZED:
+	case ErrUnauthorized:
 		return ctx.NoContent(http.StatusUnauthorized)
-	case FORBIDDEN:
+	case ErrForbidden:
 		return ctx.NoContent(http.StatusForbidden)
 	default:
 		return ctx.String(http.StatusInternalServerError, err.Error())

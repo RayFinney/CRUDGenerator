@@ -80,3 +80,34 @@ func (d *Delivery) Get{{ .PackageVarTitle }}List(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, list)
 }
+
+func (d *Delivery) Get{{ .PackageVarTitle }}(c echo.Context) error {
+	id := c.Param("id")
+	{{ .PackageVarLower }}, err := d.{{ .PackageVarLower }}Service.Get{{ .PackageVarTitle }}(c.Request().Context(), id)
+	if err != nil {
+		return utility.HandleDeliveryErrors(c, err)
+	}
+	return c.JSON(http.StatusOK, {{ .PackageVarLower }})
+}
+
+func (d *Delivery) Update{{ .PackageVarTitle }}(c echo.Context) error {
+	id := c.Param("id")
+	var {{ .PackageVarLower }} models.{{ .PackageVarTitle }}
+	if err := c.Bind(&{{ .PackageVarLower }}); err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	err := d.{{ .PackageVarLower }}Service.Update{{ .PackageVarTitle }}(c.Request().Context(), id, &{{ .PackageVarLower }})
+	if err != nil {
+		return utility.HandleDeliveryErrors(c, err)
+	}
+	return c.JSON(http.StatusOK, {{ .PackageVarLower }})
+}
+
+func (d *Delivery) Delete{{ .PackageVarTitle }}(c echo.Context) error {
+	id := c.Param("id")
+	err := d.{{ .PackageVarLower }}Service.Delete{{ .PackageVarTitle }}(c.Request().Context(), id)
+	if err != nil {
+		return utility.HandleDeliveryErrors(c, err)
+	}
+	return c.JSON(http.StatusOK, nil)
+}
