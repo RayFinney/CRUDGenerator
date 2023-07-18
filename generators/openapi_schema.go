@@ -39,11 +39,28 @@ func getProperties(sourceConfig GeneratorSource) map[string]interface{} {
 	properties := make(map[string]interface{})
 	for _, a := range sourceConfig.Attributes {
 		properties[a.Name] = make(map[string]interface{})
-		properties[a.Name].(map[string]interface{})["type"] = a.Type
+		for k, v := range getType(a.Type) {
+			properties[a.Name].(map[string]interface{})[k] = v
+		}
 		if a.Limit != 0 && a.Type == "string" {
 			properties[a.Name].(map[string]interface{})["maxLength"] = a.Limit
 		}
 
 	}
 	return properties
+}
+
+func getType(aType string) map[string]interface{} {
+	switch aType {
+	case "timestamp":
+		return map[string]interface{}{"type": "string", "format": "timestamp"}
+	case "uuid":
+		return map[string]interface{}{"type": "string", "format": "uuid"}
+	case "float":
+		return map[string]interface{}{"type": "number", "format": "float"}
+	case "bool":
+		return map[string]interface{}{"type": "boolean"}
+	default:
+		return map[string]interface{}{"type": aType}
+	}
 }
