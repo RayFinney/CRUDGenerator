@@ -16,6 +16,8 @@ const repositoryFileName string = "repository.go"
 const serviceFileName string = "service.go"
 const routesFileName string = "routes.go"
 const setupFileName string = "setup.go"
+const openapiSchemaFileName string = "openapiSchema.yaml"
+const openapiPathsFileName string = "openapiPaths.yaml"
 
 type GeneratorSource struct {
 	Service             string                      `yaml:"service"`
