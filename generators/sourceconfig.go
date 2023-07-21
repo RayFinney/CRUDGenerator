@@ -77,6 +77,8 @@ func AttributeToType(aType string) string {
 		return "int64"
 	case "float":
 		return "float64"
+	case "boolean":
+		return "bool"
 	default:
 		return aType
 	}
