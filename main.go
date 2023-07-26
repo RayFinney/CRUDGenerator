@@ -42,7 +42,6 @@ func generateStructure(sourceConfig generators.GeneratorSource) {
 	if sourceConfig.Delivery {
 		generators.GenerateDelivery(sourceConfig)
 		generators.GenerateRoutes(sourceConfig)
-		generators.GeneratePinia(sourceConfig)
 		generators.GenerateOpenApiPaths(sourceConfig)
 	}
 
